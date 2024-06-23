@@ -1,5 +1,5 @@
 # Project-TinyUrl
-Here are more details around the build and getting the variuos pieces setup and running.
+Here are more details around the build and getting the various pieces setup and running.
 =======================================================================================
 # create and run a container from a prebuilt mysql docker image from DockerHub MySQL
 # copied the data from the local file store to my projects folder ~/mysql_docker , this is the original command: docker run -dit --rm --name mysql-server -p 3306:3306 --env MYSQL_ROOT_PASSWORD=jaas -v ~/private/mysql-data:/var/lib/mysql mysql:latest
