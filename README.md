@@ -1,28 +1,28 @@
-# Project-TinyUrl
-Here are more details around the build and getting the various pieces setup and running.
-=======================================================================================
-# create and run a container from a prebuilt mysql docker image from DockerHub MySQL
-# copied the data from the local file store to my projects folder ~/mysql_docker , this is the original command: docker run -dit --rm --name mysql-server -p 3306:3306 --env MYSQL_ROOT_PASSWORD=jaas -v ~/private/mysql-data:/var/lib/mysql mysql:latest
+TinyUrl<br>
+Here are more details around the build and getting the various pieces setup and running.<br>
++++++++++<br>
+create and run a container from a prebuilt mysql docker image from DockerHub MySQL
+copied the data from the local file store to my projects folder ~/mysql_docker , this is the original command: docker run -dit --rm --name mysql-server -p 3306:3306 --env MYSQL_ROOT_PASSWORD=jaas -v ~/private/mysql-data:/var/lib/mysql mysql:latest
 
 docker run -dit --rm --name mysql-server -p 3306:3306 --env MYSQL_ROOT_PASSWORD=jaas -v ~/mysql_docker/mysql-data:/var/lib/mysql mysql:latest
 
-# to get a bash command line into the image:
-# docker exec -it mysql-server bash
+ to get a bash command line into the image:
+ docker exec -it mysql-server bash
 
 ==================================  testing the MySQL install =====================================
-# from client computer run mysql
+ from client computer run mysql
 mysql -uroot -pjaas -h ubuntu.local
 
-# show all databses
+ show all databses
 show databases;
 
-# create database <test>
+ create database <test>
 create database test;
 
-# change the database you rconnected to
+ change the database you rconnected to
 use test;
 
-# create table in the database your connected to 
+ create table in the database your connected to 
 
 CREATE TABLE Persons (
     PersonID int,
@@ -39,19 +39,19 @@ Tiny varchar(255)
 );
 
 
-# Insert values to table in database
+ Insert values to table in database
 INSERT INTO Persons (PersonID, LastName, FirstName, Address, City)
 VALUES (1, 'Hasson', 'Johan', 'Norway', 'Oslo' );
 
-# select all from persons 
+ select all from persons 
 select * from Persons;
 ============================================================================================================================
-####### Problems: the mysql reset after being stoped and restarted in docker, Resolution: use the -v option and store the files in the local host instead of in the docker image.
+ Problems: the mysql reset after being stoped and restarted in docker, Resolution: use the -v option and store the files in the local host instead of in the docker image.
 
-# install -> pip3 on local server to test python connection to the MySQL Docker insance
+ install -> pip3 on local server to test python connection to the MySQL Docker insance
 pip3 install mysql-connector-python
 
-# create local pyton code file.py , on the on-prem server 
+ create local pyton code file.py , on the on-prem server 
 --------------------     file.py      ----------------------------------------------------------
 import mysql.connector
 
