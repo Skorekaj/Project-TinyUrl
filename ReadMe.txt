@@ -1,24 +1,28 @@
-# create and run a container from a prebuilt mysql docker image from DockerHub MySQL
-# copied the data from the local file store to my projects folder ~/mysql_docker , this is the oroiginal command: docker run -dit --rm --name mysql-server -p 3306:3306 --env MYSQL_ROOT_PASSWORD=jaas -v ~/private/mysql-data:/var/lib/mysql mysql:latest
+TinyUrl
+Here are more details around the build and getting the various pieces setup and running.<br>
+---------------------------------------------------------------------------------
+create and run a container from a prebuilt mysql docker image from DockerHub MySQL
+copied the data from the local file store to my projects folder ~/mysql_docker , this is the original command: docker run -dit --rm --name mysql-server -p 3306:3306 --env MYSQL_ROOT_PASSWORD=jaas -v ~/private/mysql-data:/var/lib/mysql mysql:latest
+
 docker run -dit --rm --name mysql-server -p 3306:3306 --env MYSQL_ROOT_PASSWORD=jaas -v ~/mysql_docker/mysql-data:/var/lib/mysql mysql:latest
 
-docker exec -it mysql-server bash
+ to get a bash command line into the image:
+ docker exec -it mysql-server bash
 
-# from client run mysql
-#mysql -uroot -pjaas
+==================================  testing the MySQL install =====================================
+ from client computer run mysql
 mysql -uroot -pjaas -h ubuntu.local
 
-
-# show all databses
+ show all databses
 show databases;
 
-# create database <test>
+ create database <test>
 create database test;
 
-# change the database you rconnected to
+ change the database you rconnected to
 use test;
 
-# create table in the database your connected to 
+ create table in the database your connected to 
 
 CREATE TABLE Persons (
     PersonID int,
@@ -35,18 +39,20 @@ Tiny varchar(255)
 );
 
 
-# Insert values to table in database
+ Insert values to table in database
 INSERT INTO Persons (PersonID, LastName, FirstName, Address, City)
-VALUES (1, 'Hansen', 'Jonas', 'sweden', 'helsingborg' );
+VALUES (1, 'Hasson', 'Johan', 'Norway', 'Oslo' );
 
-# select all from persons 
+ select all from persons 
 select * from Persons;
+============================================================================================================================
+ Problems: the mysql reset after being stoped and restarted in docker, Resolution: use the -v option and store the files in the local host instead of in the docker image.
 
-####### massive problems as the mysql reset after being stoped in docker , until i found to put the -v and store the files in the local host instead of in the docker image
+ install -> pip3 on local server to test python connection to the MySQL Docker insance
+pip3 install mysql-connector-python
 
-# install -> pip3 install mysql-connector-python
-
-# create pyton code file.py
+ create local pyton code file.py , on the on-prem server 
+--------------------     file.py      ----------------------------------------------------------
 import mysql.connector
 
 cnx = mysql.connector.connect(user='root', password='jaas', host='ubuntu.local', database='test')
@@ -57,16 +63,15 @@ with cnx.cursor() as cursor:
                 print(row)
                 print(row[0],row[2])
         cnx.close()
+-------------------------------------------------------------------------------------------------
 
-# run up a web server with ubuntu base image $(PWD)<- the directory your currently in
-#docker run -dit --name "lighttpd-php" --rm -p 8000:80 -v $(pwd):/var/www alastairhm/alpine-lighttpd-php
-#docker run -dit --name "lighttpd-php" --rm -p 8000:80 -v $(pwd):/var/www debian:latest
-docker run -dit --name "ubuntu-lighttpd-php" --rm -p 8000:80 -v $(pwd):/var/www/html ubuntu:latest
+# run up a web server with ubuntu base image $(PWD) <- the directory your currently in
+docker run -dit --name "ubuntu-lighttpd-php" --rm -p 80:80 -v $(pwd):/var/www/html ubuntu:latest
 
-# to get into the docker image shell BASH
+# to get into the docker image exec a shell with BASH
 docker exec -it ubuntu-lighttpd-php bash 
 
-#install httpd and php etc 
+#install httpd and php etc ........................ 
 apt update -y
 apt upgrade -y
 apt install apache2 -y
@@ -80,18 +85,20 @@ service apache2 start
 nano phptest.php
 
 #phptest.php content
+-----------------------------------   file contnent ------------------------------------------------------
 <?php phpinfo(); ?>
+----------------------------------------------------------------------------------------------------------
 
 #try to conenct in a browser like opera/IE
 http://ubuntu.local:8000/phptest.php
 
-# commit the docker image and save tro new image
+# commit the docker image and save to new image, so yo udont have to start over from scratch and install php and dependancies again
 docker commit ubuntu-lighttpd-php ubuntu-http-updated
 
-
 #create a sql.php file to test access and pulling data from db
+-----------------------------------     MySQL.php -----------------------------------------------------------
 <?php
-$conn = mysqli_connect("192.168.0.32", "root", "jaas", "test");				// Create connection
+$conn = mysqli_connect("192.168.10.32", "root", "jaas", "test");				// Create connection
 $sql = "SELECT * FROM Persons";								// SQL query
 $result = mysqli_query($conn, $sql);							// 
 
@@ -100,13 +107,13 @@ while($row = mysqli_fetch_assoc($result)) {						// run through the results set
 
 mysqli_close($conn);									// close connection
 ?>
+--------------------------------------------------------------------------------------------------------------
 
-#### finished, the problems to get the PHP to connecto the MySQL server was several hours and due to missing one of the dependancies.
+#### finished, the problems to get the PHP to connecto the MySQL server took several hours to figure out and due to missing one of the dependancies <DOOOH !!!>.
 #### another issue was tha the docker images didnt save the changes, this was resolved by doing a "Docker commit " save, once the image is saved into the state that you want its all good
-### to troubleshoot php error 500 , go into the docker container with BAS and “php -f /var/www/html/phpsql.php”
+### to troubleshoot php error 500 , go into the docker container with a BASH session and “php -f /var/www/html/phpsql.php”
 
-
-
+Yes its not nice code, i will have to tidy it up later....................
 ################################### create code for the default index.php page ###############################
 <?php
 function redirect($url) {
@@ -210,4 +217,3 @@ if ($_GET['URL'] == "" || $turl == ""){
 ?>
 </html>
 ###################################  end code index.php ##########################################################
-
